@@ -1,0 +1,99 @@
+const User = require("../models/userModel");
+const { successResponse, errorResponse } = require("../utils/responses");
+const { StatusCodes } = require("http-status-codes");
+const { createAccessToken, generateHashedValue, isPasswordCorrect } = require("../utils/userAuth");
+
+
+
+
+const createAccount = async (req, res, next)  => {
+    try{
+        const {username, email, password, role, isVerified, lastLogin} = req.validatedUser
+
+        const existingUser = await User.findOne({ $or: [{ username }, { email }] })
+
+        if (existingUser){
+            return errorResponse(res, StatusCodes.BAD_REQUEST, `User already exists. Log in instead`)
+        }
+
+        const newUser = await User.create({
+            username,
+            email,
+            password: generateHashedValue(password),
+            role,
+            isVerified,
+            lastLogin
+        })
+
+        const accessToken = createAccessToken(newUser.id)
+
+        successResponse(res, StatusCodes.CREATED, `Successfully created an account`, {user: newUser, token: accessToken})
+
+    }catch(error){
+        if (error.code === 11000) {
+            next(error)
+            return errorResponse(res, StatusCodes.CONFLICT, "Username already exists. Try another username.")
+        }
+        console.log(error)
+        next(error)
+    }
+
+}
+
+
+const loginAccount = async (req, res, next) => {
+    try {
+        const {username, password} = req.body
+
+        if (!username || !password) {
+
+            return errorResponse(res, StatusCodes.UNPROCESSABLE_ENTITY, "missing parameter(s): input password and username")
+        }
+
+        const existingUser = await User.findOne({username}).select("+password")
+
+        if (!existingUser) {
+            return errorResponse(res, StatusCodes.BAD_REQUEST, "User does not exist. Create an account instead.")
+        }
+
+        if (!isPasswordCorrect(password, existingUser.password)) {
+            return errorResponse(res, StatusCodes.BAD_REQUEST, "You have entered the wrong username or password.")
+        }
+
+        const accessToken = createAccessToken(existingUser.id)
+
+        successResponse(res, StatusCodes.OK, "Login Successful", {user: existingUser, token: accessToken})
+    }
+
+    catch(error) {
+        console.log(error);
+        next(error)
+    }
+}
+
+// export const changePassword = async (req, res, next) => {
+//     // user is loggedin
+
+//     try {
+//         const {password} = req.body
+
+//         const updateUser = await User.findOneAndUpdate(
+//             { email: "user@example.com" }, // Filter condition (find by email)
+//             { password: "newHashedPassword" }, // Update fields
+//             { new: true } // Options: return the updated document
+//         );
+
+//         if (!password) {
+//             return errorResponse(res, StatusCodes.UNPROCESSABLE_ENTITY, "nothing to update here")
+//         }
+
+//         return successResponse(res, StatusCodes.OK, "Password changed successfully")
+//     } catch (error) {
+//         next(error)
+//     }
+    
+// }
+
+
+
+module.exports ={createAccount , loginAccount, }
