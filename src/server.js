@@ -3,6 +3,8 @@ const express = require("express");
 const errorHandler = require("./middleware/errorHandler");
 const cors = require('cors');
 const authRouter = require("./routes/authRoute");
+const cookieParser = require('cookie-parser');
+
 
 
 const app = express()
@@ -18,6 +20,7 @@ const corsOptions = {
   };
 
 app.use(cors());
+app.use(cookieParser());
 
 
 

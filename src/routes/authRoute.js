@@ -7,4 +7,4 @@ const { isLoggedIn } = require("../middleware/authToken");
 const authRouter = Router()
 authRouter.post("/sign-up", signUpValidation, createAccount);
 authRouter.post("/login", loginAccount);
-module.exports = authRouter 
+module.exports = authRouter;

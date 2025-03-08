@@ -1,7 +1,8 @@
 const User = require("../models/userModel");
+const Session = require("../models/sessionModel");
 const { successResponse, errorResponse } = require("../utils/responses");
 const { StatusCodes } = require("http-status-codes");
-const { createAccessToken, generateHashedValue, isPasswordCorrect } = require("../utils/userAuth");
+const { createAccessToken, generateHashedValue, isPasswordCorrect, createRefreshToken } = require("../utils/userAuth");
 
 
 
@@ -24,8 +25,27 @@ const createAccount = async (req, res, next)  => {
             isVerified,
             lastLogin
         })
+        const newUserId = newUser.id;
+        const accessToken = createAccessToken(newUserId)
+        const refreshToken = createRefreshToken(newUserId)
 
-        const accessToken = createAccessToken(newUser.id)
+
+        const newSession = await Session.create({
+            userId: newUserId,
+            accessToken,
+            refreshToken,
+        })
+        
+        res.cookie("accessToken", accessToken, {
+            httpOnly: true,
+            sameSite: 'Strict'
+        })
+        
+        res.cookie("sessionId", newSession.id, {
+            httpOnly: true,
+            sameSite: 'Strict'
+        })
+        
 
         successResponse(res, StatusCodes.CREATED, `Successfully created an account`, {user: newUser, token: accessToken})
 
@@ -60,9 +80,28 @@ const loginAccount = async (req, res, next) => {
             return errorResponse(res, StatusCodes.BAD_REQUEST, "You have entered the wrong username or password.")
         }
 
-        const accessToken = createAccessToken(existingUser.id)
+        const existingUserId = existingUser.id;
+        const accessToken = createAccessToken(existingUserId)
+        const refreshToken = createRefreshToken(existingUserId)
 
-        successResponse(res, StatusCodes.OK, "Login Successful", {user: existingUser, token: accessToken})
+
+        const newSession = await Session.create({
+            userId: existingUserId,
+            accessToken,
+            refreshToken,
+        })
+
+        res.cookie("accessToken", accessToken, {
+            httpOnly: true, 
+            sameSite: 'Strict'
+        })
+        
+        res.cookie("sessionId", newSession.id, {
+            httpOnly: true,
+            sameSite: 'Strict'
+        })
+
+        successResponse(res, StatusCodes.OK, `Log in succcessful`)
     }
 
     catch(error) {

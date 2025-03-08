@@ -23,9 +23,14 @@ const createAccessToken = (id) => {
     return token
 }
 
+const createRefreshToken = (id) => {
+    const token = sign({id}, jwt_secret, {expiresIn: "30d"})
+    return token
+}
+
 const isTokenValid = (token) => {
     return verify(token, jwt_secret)
 }
 
 
-module.exports ={generateHashedValue , isPasswordCorrect, createAccessToken, isTokenValid}
+module.exports ={generateHashedValue , isPasswordCorrect, createAccessToken, createRefreshToken, isTokenValid}

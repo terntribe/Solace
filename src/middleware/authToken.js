@@ -1,27 +1,61 @@
+const Session = require("../models/sessionModel");
 const { errorResponse } = require("../utils/responses");
-const { isTokenValid } = require("../utils/userAuth");
+const { isTokenValid, createAccessToken } = require("../utils/userAuth");
 const { StatusCodes } = require("http-status-codes");
 
-const isLoggedIn = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
+const isLoggedIn = async (req, res, next) => {
+    const accessToken = req.cookies.accessToken;
+    const sessionId = req.cookies.sessionId;
 
-    if (!authHeader) {
-        return next(errorResponse(res, StatusCodes.UNAUTHORIZED, 'Authorization header is required.'));
+
+    if (!accessToken) {
+      return next(errorResponse(res, StatusCodes.UNAUTHORIZED, 'Access token is required.'));
     }
-
-    if (!authHeader.startsWith('Bearer ')) {
-        return next(errorResponse(res, StatusCodes.FORBIDDEN, 'Invalid authorization header format.'));
+    
+    let session;
+    try {
+      session = await Session.findById(sessionId);
+      if (!session) {
+        return next(errorResponse(res, StatusCodes.UNAUTHORIZED, 'Login required.'));
+      }
+      // Proceed with token validation...
+    } catch (error) {
+      return next(errorResponse(res, StatusCodes.INTERNAL_SERVER_ERROR, 'An error occurred.'));
     }
-
-    const token = authHeader.split(' ')[1];
+    
 
     try {
-        const payload = isTokenValid(token);
-        req.user = { userId: payload.id };
-        next(); 
+        const payload = isTokenValid(accessToken);
+        return next(); 
     } catch (error) {
-        return next(errorResponse(res, StatusCodes.UNAUTHORIZED, 'Authentication failed: Invalid token.'));
+        if (error.name === 'TokenExpiredError') {
+          //refresh token logic'
+          try {
+            const payload = isTokenValid(session.refreshToken);
+            const newAccessToken = createAccessToken(session.userId);
+            session.accessToken = newAccessToken;
+            await session.save();
+            res.cookie("accessToken",newAccessToken,{
+              httpOnly: true, 
+              secure: true, 
+              sameSite: 'Strict'
+            })
+
+          } catch (error) {
+            if (error.name === 'TokenExpiredError') {
+              await session.deleteOne();
+              return errorResponse(res, StatusCodes.UNAUTHORIZED, 'Auth message: Session expired, please log in again')
+            }
+          }
+          
+          
+          return next();
+
+        }else{
+          return errorResponse(res, StatusCodes.UNAUTHORIZED, 'invalid access token.');
+        }
     }
+      
 };
 
 module.exports = {isLoggedIn};       
