@@ -110,6 +110,42 @@ const loginAccount = async (req, res, next) => {
     }
 }
 
+
+const logoutAccount = async (req, res, next) => {
+    //Get tokens and details 
+    const accessToken = req.cookies.accessToken;
+    const sessionId = req.cookies.sessionId;
+
+    
+    
+    // find the session and delete it
+    let session;
+    try {
+      session = await Session.findById(sessionId);
+      if (!session) {
+        next(errorResponse(res, StatusCodes.UNAUTHORIZED, 'Login required.'));
+      }
+      // Proceed with token validation...
+    } catch (error) {
+        next(errorResponse(res, StatusCodes.INTERNAL_SERVER_ERROR, 'An error occurred.'));
+    }
+    await session.deleteOne();
+
+    //delete the cookies
+    res.clearCookie("accessToken",{
+        httpOnly: true,
+        sameSite: 'Strict'
+    });
+    res.clearCookie("sessionId",{
+        httpOnly: true,
+        sameSite: 'Strict'
+    });
+
+    //send a response
+    successResponse(res, StatusCodes.OK, `logged out successfully`);
+
+}
+
 // export const changePassword = async (req, res, next) => {
 //     // user is loggedin
 
@@ -135,4 +171,4 @@ const loginAccount = async (req, res, next) => {
 
 
 
-module.exports ={createAccount , loginAccount, }
+module.exports ={createAccount , loginAccount, logoutAccount }
