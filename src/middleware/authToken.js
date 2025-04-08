@@ -1,6 +1,8 @@
+const guestSession = require("../models/guestSessionModel");
 const Session = require("../models/sessionModel");
 const { errorResponse } = require("../utils/responses");
-const { isTokenValid, createAccessToken } = require("../utils/userAuth");
+const { updateStreak } = require("../utils/streak.utils");
+const { isTokenValid, createAccessToken } = require("../utils/userAuth.utils");
 const { StatusCodes } = require("http-status-codes");
 
 const isLoggedIn = async (req, res, next) => {
@@ -16,7 +18,12 @@ const isLoggedIn = async (req, res, next) => {
     try {
       session = await Session.findById(sessionId);
       if (!session) {
-        return next(errorResponse(res, StatusCodes.UNAUTHORIZED, 'Login required.'));
+        session = await guestSession.findById(sessionId)
+        if(session){
+          req.guest = true;
+        }else{
+          return next(errorResponse(res, StatusCodes.UNAUTHORIZED, 'Login required.'));
+        }
       }
       // Proceed with token validation...
     } catch (error) {
@@ -26,6 +33,7 @@ const isLoggedIn = async (req, res, next) => {
 
     try {
         const payload = isTokenValid(accessToken);
+        await updateStreak(session.userId)
         return next(); 
     } catch (error) {
         if (error.name === 'TokenExpiredError') {
@@ -48,7 +56,7 @@ const isLoggedIn = async (req, res, next) => {
             }
           }
           
-          
+          await updateStreak(session.userId)
           return next();
 
         }else{

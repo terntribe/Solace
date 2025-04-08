@@ -4,6 +4,8 @@ const errorHandler = require("./middleware/errorHandler");
 const cors = require('cors');
 const authRouter = require("./routes/authRoute");
 const cookieParser = require('cookie-parser');
+const moodRouter = require("./routes/moodRoute");
+const assessmentRouter = require("./routes/assessment.route")
 
 
 
@@ -32,6 +34,9 @@ app.get("/", (req, res) => {
   });
 
 app.use('/auth' , authRouter)
+app.use('/mood-check', moodRouter)
+app.use('/assessment', assessmentRouter)
+app.use('/dashboard', dashboardRouter)
 
 
 

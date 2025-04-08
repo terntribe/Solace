@@ -1,5 +1,6 @@
 const User = require("../models/userModel");
 const Session = require("../models/sessionModel");
+const guestSession = require("../models/guestSessionModel")
 const { successResponse, errorResponse } = require("../utils/responses");
 const { StatusCodes } = require("http-status-codes");
 const { createAccessToken, generateHashedValue, isPasswordCorrect, createRefreshToken } = require("../utils/userAuth");
@@ -146,6 +147,40 @@ const logoutAccount = async (req, res, next) => {
 
 }
 
+const createGuestAccount = async (req, res, next)  => {
+    try {
+         
+        const randomString = Math.random().toString(36).substring(2, 7);
+
+            
+        
+        const accessToken = createAccessToken(randomString)
+
+        const newGuestSession = await guestSession.create({
+            accessToken,
+        })
+       
+        res.cookie("accessToken", accessToken, {
+            httpOnly: true,
+            sameSite: 'Strict'
+        })
+        
+        res.cookie("guestId", newGuestSession.id, {
+            httpOnly: true,
+            sameSite: 'Strict'
+        })
+        
+
+        successResponse(res, StatusCodes.CREATED, "Guest login successful")
+    } catch (error) {
+        console.log(error);
+        return next(error)
+
+    }
+       
+
+}
+
 // export const changePassword = async (req, res, next) => {
 //     // user is loggedin
 
@@ -171,4 +206,4 @@ const logoutAccount = async (req, res, next) => {
 
 
 
-module.exports ={createAccount , loginAccount, logoutAccount }
+module.exports ={createAccount , loginAccount, logoutAccount, createGuestAccount }
