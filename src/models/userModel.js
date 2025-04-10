@@ -31,6 +31,10 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    streak: {
+      type: Number,
+      required: false
+    },    
     lastLogin: {
       type: Date,
     },
