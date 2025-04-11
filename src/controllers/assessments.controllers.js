@@ -1,7 +1,7 @@
 const { StatusCodes } = require('http-status-codes');
 const Assessment = require('../models/assessment.models');
-const { errorResponse, successResponse } = require('../utils/responses.utils');
-const getUserBySessionId = require('../utils/sessions.utils');
+const { errorResponse, successResponse } = require('../utils/responses');
+const getUserBySessionId = require('../utils/sessions');
 
 
 const createAssessment = async (req, res) => {

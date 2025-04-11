@@ -1,8 +1,8 @@
 const guestSession = require("../models/guestSessionModel");
 const Session = require("../models/sessionModel");
 const { errorResponse } = require("../utils/responses");
-const { updateStreak } = require("../utils/streak.utils");
-const { isTokenValid, createAccessToken } = require("../utils/userAuth.utils");
+const { updateStreak } = require("../utils/streak");
+const { isTokenValid, createAccessToken } = require("../utils/userAuth");
 const { StatusCodes } = require("http-status-codes");
 
 const isLoggedIn = async (req, res, next) => {

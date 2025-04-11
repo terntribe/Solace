@@ -2,10 +2,12 @@ require("dotenv/config");
 const express = require("express");
 const errorHandler = require("./middleware/errorHandler");
 const cors = require('cors');
-const authRouter = require("./routes/authRoute");
+const authRouter = require("./routes/auth.route");
 const cookieParser = require('cookie-parser');
-const moodRouter = require("./routes/moodRoute");
-const assessmentRouter = require("./routes/assessment.route")
+const moodRouter = require("./routes/mood.route");
+const assessmentRouter = require("./routes/assessment.route");
+const dashboardRouter = require("./routes/dashboard.route");
+const resourceRouter = require("./routes/resources.route");
 
 
 
@@ -37,6 +39,7 @@ app.use('/auth' , authRouter)
 app.use('/mood-check', moodRouter)
 app.use('/assessment', assessmentRouter)
 app.use('/dashboard', dashboardRouter)
+app.use('/resource',resourceRouter);
 
 
 
