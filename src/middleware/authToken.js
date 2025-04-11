@@ -57,7 +57,7 @@ const isLoggedIn = async (req, res, next) => {
             await session.save();
             res.cookie("accessToken",newAccessToken,{
               httpOnly: true, 
-              secure: true, 
+              secure: false, 
               sameSite: 'Strict'
             })
 
