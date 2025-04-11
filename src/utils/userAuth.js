@@ -18,13 +18,13 @@ const isPasswordCorrect = (password1, password2) => {
     return compareSync(password1, password2)
 } 
 
-const createAccessToken = (id) => {
-    const token = sign({id}, jwt_secret, {expiresIn: "1h"})
+const createAccessToken = (passed_id) => {
+    const token = sign({id: passed_id}, jwt_secret, {expiresIn: "1h"})
     return token
 }
 
-const createRefreshToken = (id) => {
-    const token = sign({id}, jwt_secret, {expiresIn: "30d"})
+const createRefreshToken = (passed_id) => {
+    const token = sign({id: passed_id}, jwt_secret, {expiresIn: "30d"})
     return token
 }
 

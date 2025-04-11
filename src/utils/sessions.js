@@ -1,6 +1,6 @@
 // utils/sessionUtils.js
-const Session = require('../models/sessionModel');
-const User = require('../models/userModel');
+const Session = require('../models/session.model');
+const User = require('../models/user.model');
 
 async function getUserBySessionId(sessionId) {
   try {

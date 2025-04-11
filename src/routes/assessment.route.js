@@ -5,8 +5,8 @@ const { createAssessment, getAssessments, getMostRecentAssessment } = require(".
 
 
 const assessmentRouter = Router()
-assessmentRouter.post("/self-assessment", isLoggedIn, createAssessment);
-assessmentRouter.get("/self-assessment", isLoggedIn, getAssessments);
-assessmentRouter.get("self-assessment/me", isLoggedIn, getMostRecentAssessment)
+assessmentRouter.post("/", isLoggedIn, createAssessment);
+assessmentRouter.get("/", isLoggedIn, getAssessments);
+assessmentRouter.get("/me", isLoggedIn, getMostRecentAssessment)
 
 module.exports = assessmentRouter;

@@ -23,24 +23,22 @@ const createAssessment = async (req, res) => {
       return acc + (response.score || 0);
     }, 0);
 
-    const user = await getUserBySessionId(sessionId)
-    if(!user){
-      return errorResponse(res, StatusCodes.UNAUTHORIZED, 'valid SessionId required')
-    }
+    
+    
     
     const assessment = await Assessment.create({
-      userId : user.id,
+      userId : req.user.id,
       responses,
       totalScore
     });
 
   
 
-    successResponse(res, StatusCodes.OK, 'assessment stored successfully');
+    return successResponse(res, StatusCodes.OK, 'assessment stored successfully');
     
   } catch (error) {
     console.error('Assessment creation error:', error);
-    errorResponse(res, StatusCodes.BAD_REQUEST, "Couldn't store assessment entry")
+    return errorResponse(res, StatusCodes.BAD_REQUEST, "Couldn't store assessment entry")
   }
 };
 

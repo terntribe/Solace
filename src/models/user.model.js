@@ -33,8 +33,10 @@ const userSchema = new mongoose.Schema(
     },
     streak: {
       type: Number,
-      required: false
     },    
+    lastStreakUpdate: {
+      type: Date,
+    },
     lastLogin: {
       type: Date,
     },

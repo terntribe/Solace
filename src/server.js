@@ -3,11 +3,16 @@ const express = require("express");
 const errorHandler = require("./middleware/errorHandler");
 const cors = require('cors');
 const authRouter = require("./routes/auth.route");
+const authRouter = require("./routes/auth.route");
 const cookieParser = require('cookie-parser');
 const moodRouter = require("./routes/mood.route");
 const assessmentRouter = require("./routes/assessment.route");
 const dashboardRouter = require("./routes/dashboard.route");
 const resourceRouter = require("./routes/resources.route");
+const moodRouter = require("./routes/mood.route");
+const assessmentRouter = require("./routes/assessment.route");
+const reminderRouter = require("./routes/reminders.route");
+const dashboardRouter = require("./routes/dashboard.route");
 
 
 
@@ -37,9 +42,10 @@ app.get("/", (req, res) => {
 
 app.use('/auth' , authRouter)
 app.use('/mood-check', moodRouter)
-app.use('/assessment', assessmentRouter)
+app.use('/self-assessment', assessmentRouter)
 app.use('/dashboard', dashboardRouter)
 app.use('/resource',resourceRouter);
+app.use('/reminder', reminderRouter)
 
 
 

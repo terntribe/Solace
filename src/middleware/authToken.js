@@ -11,35 +11,47 @@ const isLoggedIn = async (req, res, next) => {
 
 
     if (!accessToken) {
-      return next(errorResponse(res, StatusCodes.UNAUTHORIZED, 'Access token is required.'));
+      return errorResponse(res, StatusCodes.UNAUTHORIZED, 'Access token is required.');
     }
     
     let session;
     try {
       session = await Session.findById(sessionId);
+
+      
+      // for guests
       if (!session) {
         session = await guestSession.findById(sessionId)
         if(session){
           req.guest = true;
+          return next();
         }else{
-          return next(errorResponse(res, StatusCodes.UNAUTHORIZED, 'Login required.'));
-        }
+        return errorResponse(res, StatusCodes.UNAUTHORIZED, 'Login required.');
+      }
       }
       // Proceed with token validation...
     } catch (error) {
-      return next(errorResponse(res, StatusCodes.INTERNAL_SERVER_ERROR, 'An error occurred.'));
+      return errorResponse(res, StatusCodes.INTERNAL_SERVER_ERROR, 'An error occurred.');
     }
     
 
     try {
         const payload = isTokenValid(accessToken);
-        await updateStreak(session.userId)
+        
+        if(!(payload.id == session.userId)){
+          return errorResponse('res', StatusCodes.UNAUTHORIZED, "accessCode doesn't match sessionid")
+        }
+        
+        const validatedUser = await getUserBySessionId(sessionId) 
+        req.user = validatedUser
         return next(); 
     } catch (error) {
         if (error.name === 'TokenExpiredError') {
           //refresh token logic'
           try {
             const payload = isTokenValid(session.refreshToken);
+
+
             const newAccessToken = createAccessToken(session.userId);
             session.accessToken = newAccessToken;
             await session.save();
@@ -55,8 +67,8 @@ const isLoggedIn = async (req, res, next) => {
               return errorResponse(res, StatusCodes.UNAUTHORIZED, 'Auth message: Session expired, please log in again')
             }
           }
-          
-          await updateStreak(session.userId)
+          const validatedUser = await getUserBySessionId(sessionId) 
+          req.user = validatedUser
           return next();
 
         }else{
