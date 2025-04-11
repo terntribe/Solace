@@ -1,9 +1,10 @@
-const User = require("../models/userModel");
-const Session = require("../models/sessionModel");
-const guestSession = require("../models/guestSessionModel")
-const { successResponse, errorResponse } = require("../utils/responses");
+const User = require("../models/user.model");
+const Session = require("../models/session.model");
+const guestSession = require("../models/guestSession.model")
+const { updateStreak } = require("../utils/streak.utils");
+const { successResponse, errorResponse } = require("../utils/responses.utils");
 const { StatusCodes } = require("http-status-codes");
-const { createAccessToken, generateHashedValue, isPasswordCorrect, createRefreshToken } = require("../utils/userAuth");
+const { createAccessToken, generateHashedValue, isPasswordCorrect, createRefreshToken } = require("../utils/userAuth.utils");
 
 
 
@@ -47,7 +48,7 @@ const createAccount = async (req, res, next)  => {
             sameSite: 'Strict'
         })
         
-
+        await updateStreak(newUserId)
         successResponse(res, StatusCodes.CREATED, `Successfully created an account`, {user: newUser, token: accessToken})
 
     }catch(error){
@@ -71,7 +72,7 @@ const loginAccount = async (req, res, next) => {
             return errorResponse(res, StatusCodes.UNPROCESSABLE_ENTITY, "missing parameter(s): input password and username")
         }
 
-        const existingUser = await User.findOne({username}).select("+password")
+        const existingUser = await User.findOne({username: username}).select("+password")
 
         if (!existingUser) {
             return errorResponse(res, StatusCodes.BAD_REQUEST, "User does not exist. Create an account instead.")
@@ -101,7 +102,7 @@ const loginAccount = async (req, res, next) => {
             httpOnly: true,
             sameSite: 'Strict'
         })
-
+        await updateStreak(existingUserId)
         successResponse(res, StatusCodes.OK, `Log in succcessful`)
     }
 

@@ -1,34 +1,21 @@
-const Session = require("../models/sessionModel");
-const Mood = require("../models/moodModel")
+const Session = require("../models/session.model");
+const Mood = require("../models/mood.model")
 const { errorResponse, successResponse } = require("../utils/responses.utils");
 const { StatusCodes } = require('http-status-codes');
 
 
 
 const saveMood = async (req, res, next)=>{
-    const moodObject = req.body;
     if(req.guest){
         return successResponse(res, StatusCodes.FORBIDDEN, "Guest account won't store info")
     }
 
-    const accessToken = req.cookies.accessToken;
-    const sessionId = req.cookies.sessionId;
-
-    if (!accessToken) {
-        return next(errorResponse(res, StatusCodes.UNAUTHORIZED, 'Access token is required.'));
-    }
-    let session;
     try {
-        session = await Session.findById(sessionId);
-        if (!session) {
-            return next(errorResponse(res, StatusCodes.UNAUTHORIZED, 'Login required.'));
-        }
-
         const newMood = await Mood.create({
-            userId: session.userId ,
-            moodlevel: moodObject.moodLevel
+            userId: req.user.id ,
+            moodLevel: req.body.moodLevel
         })
-
+        console.log(newMood)
         if(newMood){
            return successResponse(res, StatusCodes.OK, 'mood entry saved successfully')
         }
@@ -47,15 +34,9 @@ const getRecentMood = async (req, res, next) => {
     const sessionId = req.cookies.sessionId;
     
     try {
-        const session = await Session.findById(sessionId);
-        if(!session) {
-            return next(errorResponse(res, StatusCodes.UNAUTHORIZED, 'Invalid session'));
-        }
 
-        const recentMood = await Mood.findOne({ userId: session.userId })
-            .sort({ createdAt: -1 })
-            .select('moodlevel createdAt')
-            .lean();
+        const recentMood = await Mood.findOne({ userId: req.user.id })
+            
 
         if(!recentMood) {
             return successResponse(res, StatusCodes.OK, 'No mood entries found');

@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { loginAccount, createAccount, logoutAccount, createGuestAccount } = require("../controllers/userAuthControlller");
+const { loginAccount, createAccount, logoutAccount, createGuestAccount } = require("../controllers/userAuth.controllers");
 const { signUpValidation } = require("../middleware/userAuthValidations");
 const { isLoggedIn } = require("../middleware/authToken");
 
