@@ -1,10 +1,10 @@
 const User = require("../models/user.model");
 const Session = require("../models/session.model");
 const guestSession = require("../models/guestSession.model")
-const { updateStreak } = require("../utils/streak.utils");
-const { successResponse, errorResponse } = require("../utils/responses.utils");
+const { updateStreak } = require("../utils/streak");
+const { successResponse, errorResponse } = require("../utils/responses");
 const { StatusCodes } = require("http-status-codes");
-const { createAccessToken, generateHashedValue, isPasswordCorrect, createRefreshToken } = require("../utils/userAuth.utils");
+const { createAccessToken, generateHashedValue, isPasswordCorrect, createRefreshToken } = require("../utils/userAuth");
 
 
 

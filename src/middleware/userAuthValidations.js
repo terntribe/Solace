@@ -1,6 +1,6 @@
 const  { z } = require("zod");
 const { StatusCodes } = require("http-status-codes");
-const { errorResponse} = require("../utils/responses.utils");
+const { errorResponse} = require("../utils/responses");
 
 const userSchema = z.object({
     username: z.string({

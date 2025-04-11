@@ -1,5 +1,5 @@
-const Session = require("../models/sessionModel");
-const Mood = require("../models/moodModel")
+const Session = require("../models/session.model");
+const Mood = require("../models/mood.model")
 const { errorResponse, successResponse } = require("../utils/responses");
 const { StatusCodes } = require('http-status-codes');
 

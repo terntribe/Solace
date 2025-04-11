@@ -1,6 +1,6 @@
 const { StatusCodes } = require('http-status-codes');
 
-const { successResponse, errorResponse } = require('../utils/responses.utils');
+const { successResponse, errorResponse } = require('../utils/responses');
 const Reminder = require('../models/reminders.model');
 
 const createReminder = async (req, res, next) => {

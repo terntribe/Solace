@@ -1,5 +1,5 @@
 const { StatusCodes } = require("http-status-codes");
-const { errorResponse } = require("../utils/responses.utils");
+const { errorResponse } = require("../utils/responses");
 const mongoose = require("mongoose");
 const { ZodError } = require("zod");
 

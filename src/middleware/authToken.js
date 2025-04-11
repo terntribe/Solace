@@ -1,5 +1,5 @@
-const guestSession = require("../models/guestSessionModel");
-const Session = require("../models/sessionModel");
+const guestSession = require("../models/guestSession.model");
+const Session = require("../models/session.model");
 const { errorResponse } = require("../utils/responses");
 const { updateStreak } = require("../utils/streak");
 const { isTokenValid, createAccessToken } = require("../utils/userAuth");

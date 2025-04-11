@@ -1,5 +1,5 @@
 const { StatusCodes } = require("http-status-codes");
-const { successResponse, errorResponse } = require("../utils/responses.utils");
+const { successResponse, errorResponse } = require("../utils/responses");
 const Assessment = require("../models/assessment.models");
 
 
