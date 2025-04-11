@@ -5,6 +5,6 @@ const { getDashboardData } = require("../controllers/dashboard.controllers");
 
 
 const dashboardRouter = Router()
-dashboardRouter.post("/", isLoggedIn, getDashboardData);
+dashboardRouter.get("/", isLoggedIn, getDashboardData);
 
 module.exports = dashboardRouter;

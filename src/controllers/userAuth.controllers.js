@@ -40,11 +40,13 @@ const createAccount = async (req, res, next)  => {
         
         res.cookie("accessToken", accessToken, {
             httpOnly: true,
-            sameSite: 'Strict'
+            sameSite: 'Strict',
+            secure: false
         })
         
         res.cookie("sessionId", newSession.id, {
             httpOnly: true,
+            secure: false,
             sameSite: 'Strict'
         })
         
@@ -95,11 +97,13 @@ const loginAccount = async (req, res, next) => {
 
         res.cookie("accessToken", accessToken, {
             httpOnly: true, 
+            secure: false,
             sameSite: 'Strict'
         })
         
         res.cookie("sessionId", newSession.id, {
             httpOnly: true,
+            secure: false,
             sameSite: 'Strict'
         })
         await updateStreak(existingUserId)
@@ -136,10 +140,12 @@ const logoutAccount = async (req, res, next) => {
     //delete the cookies
     res.clearCookie("accessToken",{
         httpOnly: true,
+        secure: false,
         sameSite: 'Strict'
     });
     res.clearCookie("sessionId",{
         httpOnly: true,
+        secure: false,
         sameSite: 'Strict'
     });
 
@@ -163,11 +169,13 @@ const createGuestAccount = async (req, res, next)  => {
        
         res.cookie("accessToken", accessToken, {
             httpOnly: true,
+            secure: false,
             sameSite: 'Strict'
         })
         
         res.cookie("guestId", newGuestSession.id, {
             httpOnly: true,
+            secure: false,
             sameSite: 'Strict'
         })
         
